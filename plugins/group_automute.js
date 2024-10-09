@@ -1,3 +1,4 @@
+const config = require('../config');
 const { bot } = require('../utils');
 const moment = require('moment-timezone');
 
@@ -50,8 +51,8 @@ bot(
     if (!(await isAdmin(message.user, message, client))) return message.reply("I'm not an admin.");
 
     const inputTime = match[1];
-    const now = moment().tz(process.env.TZ);
-    const muteTime = moment.tz(inputTime, 'hh:mm A', process.env.TZ);
+    const now = moment().tz(config.TIME_ZONE);
+    const muteTime = moment.tz(inputTime, 'hh:mm A', config.TIME_ZONE);
 
     if (!muteTime.isValid()) {
       return message.reply('_Please provide a valid time in the format HH:mm AM/PM._');
