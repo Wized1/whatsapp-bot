@@ -7,13 +7,11 @@ class MuteManager {
     this.groupMuteStatus = {};
   }
 
-  muteGroup(groupId, duration) {
+  muteGroup(groupId) {
     this.groupMuteStatus[groupId] = {
       muted: true,
-      duration: duration,
       timestamp: Date.now(),
     };
-    return this.groupMuteStatus[groupId];
   }
 
   unmuteGroup(groupId) {
@@ -22,13 +20,6 @@ class MuteManager {
 
   isGroupMuted(groupId) {
     return this.groupMuteStatus[groupId]?.muted || false;
-  }
-
-  getRemainingTime(groupId) {
-    const muteInfo = this.groupMuteStatus[groupId];
-    if (!muteInfo) return null;
-    const remainingTime = muteInfo.duration - (Date.now() - muteInfo.timestamp);
-    return remainingTime > 0 ? remainingTime : null;
   }
 }
 
@@ -57,21 +48,18 @@ bot(
     if (!muteTime.isValid()) {
       return message.reply('_Please provide a valid time in the format HH:mm AM/PM._');
     }
-
     if (muteTime.isBefore(now)) {
       muteTime.add(1, 'days');
     }
-
-    const duration = muteTime.diff(now);
+    const delay = muteTime.diff(now);
     await client.groupSettingUpdate(message.jid, 'announcement');
-    const muteInfo = muteManager.muteGroup(message.jid, duration);
-    message.reply(`_Group will be muted until ${muteTime.format('hh:mm A')} in your timezone._`);
-
+    muteManager.muteGroup(message.jid);
+    message.reply(`_Group will be muted at ${muteTime.format('hh:mm A')} in your timezone._`);
     setTimeout(async () => {
       muteManager.unmuteGroup(message.jid);
       await client.groupSettingUpdate(message.jid, 'public');
       client.sendMessage(message.jid, '_Group has been unmuted._', { quoted: message });
-    }, muteInfo.duration);
+    }, delay);
   }
 );
 
@@ -102,12 +90,7 @@ bot(
     if (!message.isGroup) return message.reply('_For Groups Only!_');
     const isMuted = muteManager.isGroupMuted(message.jid);
     if (isMuted) {
-      const remainingTime = muteManager.getRemainingTime(message.jid);
-      if (remainingTime) {
-        message.reply(`_Group is currently muted. Remaining time: ${Math.ceil(remainingTime / 60000)} minutes._`);
-      } else {
-        message.reply('_Group is currently unmuted._');
-      }
+      message.reply('_Group is currently muted._');
     } else {
       message.reply('_Group is currently unmuted._');
     }
