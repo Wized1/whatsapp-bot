@@ -1,14 +1,15 @@
 const { bot } = require('../utils');
+const moment = require('moment');
 
 class MuteManager {
   constructor() {
-    this.groupMuteStatus = {}; // In-memory store for mute status by group ID
+    this.groupMuteStatus = {};
   }
 
   muteGroup(groupId, duration) {
     this.groupMuteStatus[groupId] = {
       muted: true,
-      duration: duration * 60 * 1000, // Convert minutes to milliseconds
+      duration: duration,
       timestamp: Date.now(),
     };
     return this.groupMuteStatus[groupId];
@@ -46,24 +47,23 @@ bot(
   },
   async (message, match, m, client) => {
     if (!message.isGroup) return message.reply('_For Groups Only!_');
-
-    const isAdminUser = await isAdmin(message.from, message, client);
-    if (!isAdminUser) return message.reply('_Only admins can mute the group._');
-
-    const muteDuration = match[1] ? parseInt(match[1], 10) : null; // Get the duration from the command
-    if (!muteDuration || isNaN(muteDuration) || muteDuration <= 0) {
-      return message.reply('_Please provide a valid mute duration in minutes._');
+    if (!(await isAdmin(message.user, message, client))) return message.reply("I'm not an admin.");
+    const inputTime = match[1];
+    const now = moment();
+    const muteTime = moment(inputTime, 'HH:mm A');
+    if (!muteTime.isValid()) {
+      return message.reply('_Please provide a valid time in the format HH:mm AM/PM._');
     }
-
-    // Mute the group by updating group settings
-    await client.groupSettingUpdate(message.jid, 'announcement'); // Set group to announcement mode
-    const muteInfo = muteManager.muteGroup(message.jid, muteDuration);
-    message.reply(`_Group will be muted for ${muteDuration} minutes._`);
-
-    // Automatically unmute after the specified duration
+    if (muteTime.isBefore(now)) {
+      muteTime.add(1, 'days');
+    }
+    const duration = muteTime.diff(now);
+    await client.groupSettingUpdate(message.jid, 'announcement');
+    const muteInfo = muteManager.muteGroup(message.jid, duration);
+    message.reply(`_Group will be muted until ${muteTime.format('hh:mm A')}_`);
     setTimeout(async () => {
       muteManager.unmuteGroup(message.jid);
-      await client.groupSettingUpdate(message.jid, 'public'); // Set group back to public mode
+      await client.groupSettingUpdate(message.jid, 'public');
       client.sendMessage(message.jid, '_Group has been unmuted._', { quoted: message });
     }, muteInfo.duration);
   }
@@ -78,12 +78,9 @@ bot(
   },
   async (message, match, m, client) => {
     if (!message.isGroup) return message.reply('_For Groups Only!_');
-
-    const isAdminUser = await isAdmin(message.from, message, client);
-    if (!isAdminUser) return message.reply('_Only admins can unmute the group._');
-
-    muteManager.unmuteGroup(message.jid); // Remove mute status
-    await client.groupSettingUpdate(message.jid, 'public'); // Set group back to public mode
+    if (!(await isAdmin(message.user, message, client))) return message.reply("I'm not an admin.");
+    muteManager.unmuteGroup(message.jid);
+    await client.groupSettingUpdate(message.jid, 'public');
     message.reply('_Group has been unmuted._');
   }
 );
@@ -97,7 +94,6 @@ bot(
   },
   async (message, match, m, client) => {
     if (!message.isGroup) return message.reply('_For Groups Only!_');
-
     const isMuted = muteManager.isGroupMuted(message.jid);
     if (isMuted) {
       const remainingTime = muteManager.getRemainingTime(message.jid);
