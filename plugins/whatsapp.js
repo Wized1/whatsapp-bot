@@ -161,6 +161,7 @@ bot(
   for (const jid of jids) {
    await client.relayMessage(jid, m.quoted.message, { messageId: m.quoted.key.id, quoted: { key: m.quoted.key, message: m.quoted.message, participant: m.quoted.participant } || message.data });
   }
+  return message.reply('*_Message Forwarded_*');
  }
 );
 
