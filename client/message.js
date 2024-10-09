@@ -113,19 +113,18 @@ class Message extends Base {
    pdf: () => sendMedia('document', content, { ...opt, mimetype: 'application/pdf' }),
   };
 
-  return (
+  const message = await (
    sendFunc[type.toLowerCase()] ||
    (() => {
     throw new Error('Unsupported message type');
    })
   )();
+  return new Message(this.client, message);
  }
 
  async reply(text, options = {}) {
   let messageContent = { text };
-  if (options.mentions) {
-   messageContent.mentions = options.mentions;
-  }
+  if (options.mentions) messageContent.mentions = options.mentions;
   const message = await this.client.sendMessage(this.jid, messageContent, { quoted: this.data, ...options });
   return new Message(this.client, message);
  }
@@ -150,7 +149,17 @@ class Message extends Base {
   const type = options.type || (await detectType(content));
   const mergedOptions = { packname: 'ғxᴏᴘ-ᴍᴅ', author: 'ᴀsᴛʀᴏ', quoted: this.data, ...options };
 
-  return this.sendMessage(jid, content, mergedOptions, type);
+  const message = await this.sendMessage(jid, content, mergedOptions, type);
+  message.reply = async (text, replyOptions = {}) => {
+   let messageContent = { text };
+   if (replyOptions.mentions) {
+    messageContent.mentions = replyOptions.mentions;
+   }
+   const replyMessage = await this.client.sendMessage(jid, messageContent, { quoted: message.data, ...replyOptions });
+   return new Message(this.client, replyMessage);
+  };
+
+  return message;
  }
  async forward(jid, content, options = {}) {
   if (options.readViewOnce) {
