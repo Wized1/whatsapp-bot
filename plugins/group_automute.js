@@ -1,10 +1,12 @@
 const config = require('../config');
 const { bot } = require('../utils');
-const moment = require('moment-timezone');
+const moment = require('moment');
+const cron = require('node-cron');
 
 class MuteManager {
   constructor() {
     this.groupMuteStatus = {};
+    this.scheduledTasks = {}; // Store scheduled cron jobs
   }
 
   muteGroup(groupId) {
@@ -20,6 +22,36 @@ class MuteManager {
 
   isGroupMuted(groupId) {
     return this.groupMuteStatus[groupId]?.muted || false;
+  }
+
+  scheduleMute(groupId, muteTime) {
+    const cronTime = muteTime.format('m H * * *'); 
+    this.clearScheduledTask(groupId);
+
+    this.scheduledTasks[groupId] = cron.schedule(cronTime, async () => {
+      await client.groupSettingUpdate(groupId, 'announcement');
+      this.muteGroup(groupId);
+      client.sendMessage(groupId, '_Group has been muted._');
+    });
+  }
+
+  scheduleUnmute(groupId) {
+    const unmuteTime = moment().add(1, 'days').set({ hour: 0, minute: 0 }); // Set to the next day
+
+    const cronTime = unmuteTime.format('m H * * *');
+
+    this.scheduledTasks[groupId] = cron.schedule(cronTime, async () => {
+      this.unmuteGroup(groupId);
+      await client.groupSettingUpdate(groupId, 'public');
+      client.sendMessage(groupId, '_Group has been unmuted._');
+    });
+  }
+
+  clearScheduledTask(groupId) {
+    if (this.scheduledTasks[groupId]) {
+      this.scheduledTasks[groupId].stop();
+      delete this.scheduledTasks[groupId];
+    }
   }
 }
 
@@ -42,24 +74,19 @@ bot(
     if (!(await isAdmin(message.user, message, client))) return message.reply("I'm not an admin.");
 
     const inputTime = match[1];
-    const now = moment().tz(config.TIME_ZONE);
-    const muteTime = moment.tz(inputTime, 'hh:mm A', config.TIME_ZONE);
+    const now = moment();
+    const muteTime = moment(inputTime, 'hh:mm A');
 
     if (!muteTime.isValid()) {
       return message.reply('_Please provide a valid time in the format HH:mm AM/PM._');
     }
+
     if (muteTime.isBefore(now)) {
       muteTime.add(1, 'days');
     }
-    const delay = muteTime.diff(now);
-    await client.groupSettingUpdate(message.jid, 'announcement');
-    muteManager.muteGroup(message.jid);
-    message.reply(`_Group will be muted at ${muteTime.format('hh:mm A')} in your timezone._`);
-    setTimeout(async () => {
-      muteManager.unmuteGroup(message.jid);
-      await client.groupSettingUpdate(message.jid, 'public');
-      client.sendMessage(message.jid, '_Group has been unmuted._', { quoted: message });
-    }, delay);
+
+    muteManager.scheduleMute(message.jid, muteTime);
+    message.reply(`_Group will be muted at ${muteTime.format('hh:mm A')}._`);
   }
 );
 
@@ -74,6 +101,7 @@ bot(
     if (!message.isGroup) return message.reply('_For Groups Only!_');
     if (!(await isAdmin(message.user, message, client))) return message.reply("I'm not an admin.");
     muteManager.unmuteGroup(message.jid);
+    muteManager.clearScheduledTask(message.jid);
     await client.groupSettingUpdate(message.jid, 'public');
     message.reply('_Group has been unmuted._');
   }

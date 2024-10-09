@@ -29,6 +29,7 @@
     "jsdom": "^25.0.1",
     "jsqr": "^1.4.0",
     "moment": "*",
+    "node-cron": "^3.0.3",
     "node-webpmux": "^3.1.7",
     "pastebin-js": "^1.0.6",
     "pdfkit": "^0.15.0",
