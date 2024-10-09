@@ -1,5 +1,5 @@
 const { bot } = require('../utils');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 class MuteManager {
   constructor() {
@@ -48,19 +48,24 @@ bot(
   async (message, match, m, client) => {
     if (!message.isGroup) return message.reply('_For Groups Only!_');
     if (!(await isAdmin(message.user, message, client))) return message.reply("I'm not an admin.");
+
     const inputTime = match[1];
-    const now = moment();
-    const muteTime = moment(inputTime, 'HH:mm A');
+    const now = moment().tz(process.env.TZ);
+    const muteTime = moment.tz(inputTime, 'hh:mm A', process.env.TZ);
+
     if (!muteTime.isValid()) {
       return message.reply('_Please provide a valid time in the format HH:mm AM/PM._');
     }
+
     if (muteTime.isBefore(now)) {
       muteTime.add(1, 'days');
     }
+
     const duration = muteTime.diff(now);
     await client.groupSettingUpdate(message.jid, 'announcement');
     const muteInfo = muteManager.muteGroup(message.jid, duration);
-    message.reply(`_Group will be muted until ${muteTime.format('hh:mm A')}_`);
+    message.reply(`_Group will be muted until ${muteTime.format('hh:mm A')} in your timezone._`);
+
     setTimeout(async () => {
       muteManager.unmuteGroup(message.jid);
       await client.groupSettingUpdate(message.jid, 'public');
