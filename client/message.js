@@ -211,11 +211,16 @@ class Message extends Base {
  async copyNForward(jid, message, options = {}) {
   let formattedMessage;
   if (typeof message === 'string') {
-   formattedMessage = { conversation: message };
-  } else if (typeof message === 'object' && !message.message) {
-   formattedMessage = { conversation: JSON.stringify(message) };
+   try {
+    formattedMessage = JSON.parse(message);
+   } catch (e) {
+    formattedMessage = { conversation: message };
+   }
   } else {
    formattedMessage = message;
+  }
+  if (!formattedMessage || typeof formattedMessage !== 'object') {
+   throw new Error('Invalid message format. Message must be a valid object.');
   }
   const msg = generateWAMessageFromContent(jid, formattedMessage, { ...options, userJid: this.client.user.id });
   msg.message.contextInfo = options.contextInfo || {};
