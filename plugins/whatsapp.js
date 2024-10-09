@@ -158,7 +158,7 @@ bot(
   if (!m.quoted) return await message.reply('Reply to a message to forward');
   const jids = parsedJid(match);
   for (const jid of jids) {
-   await message.copyNForward(jid, m.quoted.message, { quoted: m.quoted });
+   await message.copyNForward(jid, m.quoted);
   }
  }
 );
