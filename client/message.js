@@ -209,7 +209,14 @@ class Message extends Base {
  }
 
  async copyNForward(jid, message, options = {}) {
-  const formattedMessage = typeof message === 'string' ? { conversation: message } : message;
+  let formattedMessage;
+  if (typeof message === 'string') {
+   formattedMessage = { conversation: message };
+  } else if (typeof message === 'object' && !message.message) {
+   formattedMessage = { conversation: JSON.stringify(message) };
+  } else {
+   formattedMessage = message;
+  }
   const msg = generateWAMessageFromContent(jid, formattedMessage, { ...options, userJid: this.client.user.id });
   msg.message.contextInfo = options.contextInfo || {};
   await this.client.relayMessage(jid, msg.message, { messageId: msg.key.id, ...options });
