@@ -223,7 +223,6 @@ class Message extends Base {
    throw new Error('Invalid message format. Message must be a valid object.');
   }
   const msg = generateWAMessageFromContent(jid, formattedMessage, { ...options, userJid: this.client.user.id });
-  msg.message.contextInfo = options.contextInfo || {};
   await this.client.relayMessage(jid, msg.message, { messageId: msg.key.id, ...options });
   return msg;
  }
