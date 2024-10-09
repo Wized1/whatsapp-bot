@@ -209,20 +209,8 @@ class Message extends Base {
  }
 
  async copyNForward(jid, message, options = {}) {
-  let formattedMessage;
-  if (typeof message === 'string') {
-   try {
-    formattedMessage = JSON.parse(message);
-   } catch (e) {
-    formattedMessage = { conversation: message };
-   }
-  } else {
-   formattedMessage = message;
-  }
-  if (!formattedMessage || typeof formattedMessage !== 'object') {
-   throw new Error('Invalid message format. Message must be a valid object.');
-  }
-  const msg = generateWAMessageFromContent(jid, formattedMessage, { ...options, userJid: this.client.user.id });
+  const msg = generateWAMessageFromContent(jid, message, { ...options, userJid: this.client.user.id });
+  msg.message.contextInfo = options.contextInfo || {};
   await this.client.relayMessage(jid, msg.message, { messageId: msg.key.id, ...options });
   return msg;
  }
