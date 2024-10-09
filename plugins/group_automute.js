@@ -1,50 +1,29 @@
-const config = require('../config');
 const { bot } = require('../utils');
 const moment = require('moment');
 const cron = require('node-cron');
 
 class MuteManager {
   constructor() {
-    this.groupMuteStatus = {};
-    this.scheduledTasks = {}; // Store scheduled cron jobs
+    this.mutedGroups = new Set();
+    this.scheduledTasks = {};
   }
 
   muteGroup(groupId) {
-    this.groupMuteStatus[groupId] = {
-      muted: true,
-      timestamp: Date.now(),
-    };
+    this.mutedGroups.add(groupId);
   }
 
   unmuteGroup(groupId) {
-    delete this.groupMuteStatus[groupId];
+    this.mutedGroups.delete(groupId);
   }
 
   isGroupMuted(groupId) {
-    return this.groupMuteStatus[groupId]?.muted || false;
+    return this.mutedGroups.has(groupId);
   }
 
-  scheduleMute(groupId, muteTime) {
-    const cronTime = muteTime.format('m H * * *'); 
+  scheduleTask(groupId, time, task) {
     this.clearScheduledTask(groupId);
-
-    this.scheduledTasks[groupId] = cron.schedule(cronTime, async () => {
-      await client.groupSettingUpdate(groupId, 'announcement');
-      this.muteGroup(groupId);
-      client.sendMessage(groupId, '_Group has been muted._');
-    });
-  }
-
-  scheduleUnmute(groupId) {
-    const unmuteTime = moment().add(1, 'days').set({ hour: 0, minute: 0 }); // Set to the next day
-
-    const cronTime = unmuteTime.format('m H * * *');
-
-    this.scheduledTasks[groupId] = cron.schedule(cronTime, async () => {
-      this.unmuteGroup(groupId);
-      await client.groupSettingUpdate(groupId, 'public');
-      client.sendMessage(groupId, '_Group has been unmuted._');
-    });
+    const cronTime = time.format('m H * * *');
+    this.scheduledTasks[groupId] = cron.schedule(cronTime, task);
   }
 
   clearScheduledTask(groupId) {
@@ -62,6 +41,17 @@ const isAdmin = async (jid, message, client) => {
   return metadata?.participants.some((p) => p.id === jid && p.admin) || false;
 };
 
+const parseTime = (inputTime) => {
+  const now = moment();
+  const time = moment(inputTime, 'hh:mm A', true);
+  if (!time.isValid()) return null;
+
+  time.year(now.year()).month(now.month()).date(now.date());
+  if (time.isBefore(now)) time.add(1, 'days');
+
+  return time;
+};
+
 bot(
   {
     pattern: 'automute ?(.*)',
@@ -74,53 +64,51 @@ bot(
     if (!(await isAdmin(message.user, message, client))) return message.reply("I'm not an admin.");
 
     const inputTime = match[1];
-    const now = moment();
-    const muteTime = moment(inputTime, 'hh:mm A');
+    if (!inputTime) return message.reply('_Please provide a time in the format HH:mm AM/PM._');
 
-    if (!muteTime.isValid()) {
-      return message.reply('_Please provide a valid time in the format HH:mm AM/PM._');
-    }
+    const muteTime = parseTime(inputTime);
+    if (!muteTime) return message.reply('_Please provide a valid time in the format HH:mm AM/PM._');
 
-    if (muteTime.isBefore(now)) {
-      muteTime.add(1, 'days');
-    }
+    muteManager.scheduleTask(message.jid, muteTime, async () => {
+      await client.groupSettingUpdate(message.jid, 'announcement');
+      muteManager.muteGroup(message.jid);
+      client.sendMessage(message.jid, '_Group has been muted._');
+    });
 
-    muteManager.scheduleMute(message.jid, muteTime);
     message.reply(`_Group will be muted at ${muteTime.format('hh:mm A')}._`);
   }
 );
 
 bot(
   {
-    pattern: 'autounmute ?(.*)',
+    pattern: 'autounmute',
     fromMe: false,
-    desc: 'Set AutoUnmute for group',
+    desc: 'Unmute group and clear scheduled mute',
     type: 'group',
   },
   async (message, match, m, client) => {
     if (!message.isGroup) return message.reply('_For Groups Only!_');
     if (!(await isAdmin(message.user, message, client))) return message.reply("I'm not an admin.");
+
     muteManager.unmuteGroup(message.jid);
     muteManager.clearScheduledTask(message.jid);
-    await client.groupSettingUpdate(message.jid, 'public');
-    message.reply('_Group has been unmuted._');
+    await client.groupSettingUpdate(message.jid, 'not_announcement');
+    message.reply('_Group has been unmuted and scheduled mute cleared._');
   }
 );
 
 bot(
   {
-    pattern: 'getmute ?(.*)',
+    pattern: 'mutestatus',
     fromMe: false,
     desc: 'Get AutoMute status for group',
     type: 'group',
   },
   async (message, match, m, client) => {
     if (!message.isGroup) return message.reply('_For Groups Only!_');
+
     const isMuted = muteManager.isGroupMuted(message.jid);
-    if (isMuted) {
-      message.reply('_Group is currently muted._');
-    } else {
-      message.reply('_Group is currently unmuted._');
-    }
+    const status = isMuted ? 'muted' : 'unmuted';
+    message.reply(`_Group is currently ${status}._`);
   }
 );
