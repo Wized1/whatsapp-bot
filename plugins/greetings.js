@@ -1,5 +1,5 @@
 const { bot } = require('../utils');
-const GreetingsHandler = require('../utils/whatsapp/Greetings');
+const { GreetingsHandler } = require('../client');
 
 bot(
  {

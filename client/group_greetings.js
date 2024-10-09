@@ -1,5 +1,5 @@
-const { FiletypeFromUrl, parseJid, extractUrlFromMessage } = require('../base_utils');
-const { getStatus, getMessage, setMessage, toggleStatus, delMessage } = require('../../lib/database/greetings');
+const { FiletypeFromUrl, parseJid, extractUrlFromMessage } = require('../utils/base_utils');
+const { getStatus, getMessage, setMessage, toggleStatus, delMessage } = require('../lib/database');
 
 class GreetingsHandler {
  constructor(conn) {

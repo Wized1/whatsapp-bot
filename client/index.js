@@ -3,5 +3,6 @@ module.exports={
   Message: require('./message'),
   ReplyMessage: require('./message_reply'),
   SessionManager: require('./session_manager'),
-  GroupManager: require('./group_manager')
+  GroupManager: require('./group_manager'),
+  GreetingsHandler: require('./group_greetings')
 }
