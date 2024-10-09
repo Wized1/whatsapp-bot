@@ -138,7 +138,7 @@ class Message extends Base {
   return this.client.sendMessage(this.jid, { react: { text: emoji, key: this.key } });
  }
 
- async send(content, options = {}) {
+ async send(content, options = { quoted: this.data }) {
   const jid = this.jid || options.jid;
   if (!jid) throw new Error('JID is required to send a message.');
 
@@ -148,18 +148,9 @@ class Message extends Base {
    return 'text';
   };
   const type = options.type || (await detectType(content));
-  const mergedOptions = { packname: 'ғxᴏᴘ-ᴍᴅ', author: 'ᴀsᴛʀᴏ', quoted: options.quoted || this.data, ...options };
-  let messageContent;
-  if (type === 'text') {
-   messageContent = { text: content };
-   if (options.mentions) {
-    messageContent.mentions = options.mentions;
-   }
-  } else {
-   messageContent = content;
-  }
-  const message = await this.client.sendMessage(jid, messageContent, mergedOptions);
-  return new Message(this.client, message);
+  const mergedOptions = { packname: 'ғxᴏᴘ-ᴍᴅ', author: 'ᴀsᴛʀᴏ', quoted: this.data, ...options };
+
+  return this.sendMessage(jid, content, mergedOptions, type);
  }
  async forward(jid, content, options = {}) {
   if (options.readViewOnce) {
