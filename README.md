@@ -6,14 +6,14 @@
 
 ## 🔐 Important Notice
 
-This project uses a **custom server** for effective management of authentication state, overcoming the limitations of `app state keys`, which do not regenerate automatically from `creds.json`. The server securely stores your session data for **48 hours**, giving you enough time to retrieve it and providing a unique **secret key** for exclusive access.
+This project uses a **custom server** for effective management of authentication state, overcoming the limitations of `app state keys`, which do not regenerate automatically from `creds.json`. The server securely stores your session data for **1 Week**, giving you enough time to retrieve it and providing a unique **secret key** for exclusive access.
 
 This setup is managed by the [Session Manager](https://github.com/AstroX10/session-manager) and [Session Generator](https://github.com/AstroX10/whatsapp-bot-session), hosted as an **open-source solution** on Render. **I do not have access to your data.**
 
 For your security:
 
 - **Never share your session ID `Access Key` with anyone**, including myself.
-- The 48-hour data retention period is designed as a safety measure to prevent unauthorized access.
+- The 1 week data retention period is designed as a safety measure to prevent unauthorized access.
 
 This project is open source and created for the community by AstroX10, with a strong commitment to **safety** and **privacy**. Stay safe!
 
