@@ -58,26 +58,34 @@ Add the following environment variables to your platform:
 const { bot } = require('../utils'); // Plugins Manager Handles Plugins
 
 bot(
- {
-  pattern: 'test', // Name of your command
-  fromMe: false, // True for only you, regardless of the mode
-  desc: 'A Test Command', // Description of the command
-  type: 'plugins', // Category for grouping commands in the menu
- },
- async (message, match, m, client) => {
-  // Define what the command does here
+  {
+    pattern: 'test', // Name of your command
+    fromMe: false, // True for only you, regardless of the mode
+    desc: 'A Test Command', // Description of the command
+    type: 'plugins', // Category for grouping commands in the menu
+  },
+  async (message, match, m, client) => {
+    // Define what the command does here
 
-  const saveMedia = m.quoted.download(); // Downloads a replied Image, Video, or ViewOnce
-  const query = match; // Custom query requirements
+    const saveMedia = m.quoted.download(); // Downloads a replied Image, Video, or ViewOnce
+    const query = match; // Custom query requirements
 
-  if (!query) return await message.reply('_Provide a query!_'); // Ensure the user inputs a query
+    if (!query) return await message.reply('_Provide a query!_'); // Ensure the user inputs a query
 
-  const replied = message.reply_message || message.reply_audio; // Ensure a reply exists
+    const replied = message.reply_message || message.reply_audio; // Ensure a reply exists
 
-  if (!replied) return await message.reply('_You must reply to a message!_'); // Return if not a reply
+    if (!replied) return await message.reply('_You must reply to a message!_'); // Return if not a reply
 
-  return await client.sendMessage(message.jid, { text: `Test successful` }, { quoted: message });
- }
+    return await client.sendMessage(
+      message.jid,
+      {
+        text: `Test successful`,
+      },
+      {
+        quoted: message,
+      }
+    );
+  }
 );
 ```
 
@@ -88,18 +96,28 @@ bot(
 ### 1. **Sending a Text Message**
 
 ```javascript
-await send('Hello, this is a test message!', { jid: '1234567890@s.whatsapp.net' });
+await send('Hello, this is a test message!', {
+  jid: '1234567890@s.whatsapp.net',
+});
 ```
 
 ### 2. **Sending a Text Message with Quoted Message**
 
 ```javascript
 const quotedMessage = {
- key: { remoteJid: '1234567890@s.whatsapp.net', id: 'ABC123XYZ' },
- mtype: 'conversation',
- message: { conversation: 'This is the original message being quoted.' },
+  key: {
+    remoteJid: '1234567890@s.whatsapp.net',
+    id: 'ABC123XYZ',
+  },
+  mtype: 'conversation',
+  message: {
+    conversation: 'This is the original message being quoted.',
+  },
 };
-await send('This is a reply to the quoted message.', { jid: '1234567890@s.whatsapp.net', quoted: quotedMessage });
+await send('This is a reply to the quoted message.', {
+  jid: '1234567890@s.whatsapp.net',
+  quoted: quotedMessage,
+});
 ```
 
 ### 3. **Sending an Image Message**
@@ -107,42 +125,68 @@ await send('This is a reply to the quoted message.', { jid: '1234567890@s.whatsa
 ```javascript
 const fs = require('fs');
 const imageBuffer = fs.readFileSync('./path/to/image.jpg');
-await send(imageBuffer, { jid: '1234567890@s.whatsapp.net' });
+await send(imageBuffer, {
+  jid: '1234567890@s.whatsapp.net',
+});
 ```
 
 ### 4. **Sending a Video Message**
 
 ```javascript
-await send('https://example.com/path/to/video.mp4', { jid: '1234567890@s.whatsapp.net' });
+await send('https://example.com/path/to/video.mp4', {
+  jid: '1234567890@s.whatsapp.net',
+});
 ```
 
 ### 5. **Sending a Document or PDF File**
 
 ```javascript
 const pdfBuffer = fs.readFileSync('./path/to/document.pdf');
-await send(pdfBuffer, { jid: '1234567890@s.whatsapp.net', type: 'document', mimetype: 'application/pdf' });
+await send(pdfBuffer, {
+  jid: '1234567890@s.whatsapp.net',
+  type: 'document',
+  mimetype: 'application/pdf',
+});
 ```
 
 ### 6. **Sending an Interactive Message**
 
 ```javascript
 const interactiveContent = {
- text: 'Choose an option:',
- footer: 'Please select one:',
- buttons: [
-  { buttonId: 'option1', buttonText: { displayText: 'Option 1' }, type: 1 },
-  { buttonId: 'option2', buttonText: { displayText: 'Option 2' }, type: 1 },
- ],
- headerType: 1,
+  text: 'Choose an option:',
+  footer: 'Please select one:',
+  buttons: [
+    {
+      buttonId: 'option1',
+      buttonText: {
+        displayText: 'Option 1',
+      },
+      type: 1,
+    },
+    {
+      buttonId: 'option2',
+      buttonText: {
+        displayText: 'Option 2',
+      },
+      type: 1,
+    },
+  ],
+  headerType: 1,
 };
-await send(interactiveContent, { jid: '1234567890@s.whatsapp.net', type: 'interactive' });
+await send(interactiveContent, {
+  jid: '1234567890@s.whatsapp.net',
+  type: 'interactive',
+});
 ```
 
 ### 7. **Sending a Sticker Message**
 
 ```javascript
 const stickerBuffer = fs.readFileSync('./path/to/sticker.webp');
-await send(stickerBuffer, { jid: '1234567890@s.whatsapp.net', type: 'sticker' });
+await send(stickerBuffer, {
+  jid: '1234567890@s.whatsapp.net',
+  type: 'sticker',
+});
 ```
 
 ---

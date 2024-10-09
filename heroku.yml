@@ -1,15 +1,15 @@
 build:
- docker:
-  worker: Dockerfile
- config:
-  NODE_ENV: production
+docker:
+worker: Dockerfile
+config:
+NODE_ENV: production
 
 release:
- command:
-  - npm install
-  - npm start
+command:
+- npm install
+- npm start
 
 formation:
- worker:
-  quantity: 1
-  size: free
+worker:
+quantity: 1
+size: free

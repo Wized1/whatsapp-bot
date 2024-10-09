@@ -24,12 +24,12 @@ async function buffToFile(buffer, filename) {
 }
 
 /**
-* Downloads content from a specified URL and returns it as a buffer.
-* @param {String} url - The URL of the resource to download.
-* @param {Object} [options={}] - Optional request configuration.
-* @returns {Promise<Buffer>} - A promise that resolves to a Buffer of the downloaded data.
-* @throws {Error} - Throws an error if the request fails.
-*/
+ * Downloads content from a specified URL and returns it as a buffer.
+ * @param {String} url - The URL of the resource to download.
+ * @param {Object} [options={}] - Optional request configuration.
+ * @returns {Promise<Buffer>} - A promise that resolves to a Buffer of the downloaded data.
+ * @throws {Error} - Throws an error if the request fails.
+ */
 async function getBuffer(url, options = {}) {
   try {
     const res = await axios({
@@ -67,5 +67,5 @@ async function localBuffer(filePath) {
 module.exports = {
   buffToFile,
   getBuffer,
-  localBuffer
-}
+  localBuffer,
+};

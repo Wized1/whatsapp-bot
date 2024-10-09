@@ -1,29 +1,31 @@
 const { bot, isAdmin, parsedJid } = require('../utils');
 
 bot(
- {
-  pattern: 'add',
-  fromMe: true,
-  desc: 'add a person to group',
-  type: 'group',
- },
- async (message, match, m, client) => {
-  if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
-  match = match || message.reply_message.jid;
-  if (!match) return await message.reply('_Mention user to add');
-  if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
-  const jid = parsedJid(match);
-  await client.groupParticipantsUpdate(message.jid, [jid], 'add');
-  return await message.reply(`_@${jid[0].split('@')[0]} added_`, { mentions: [jid] });
- }
+  {
+    pattern: 'add',
+    fromMe: true,
+    desc: 'add a person to group',
+    type: 'group',
+  },
+  async (message, match, m, client) => {
+    if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
+    match = match || message.reply_message.jid;
+    if (!match) return await message.reply('_Mention user to add');
+    if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
+    const jid = parsedJid(match);
+    await client.groupParticipantsUpdate(message.jid, [jid], 'add');
+    return await message.reply(`_@${jid[0].split('@')[0]} added_`, {
+      mentions: [jid],
+    });
+  }
 );
 
 bot(
-  { 
-   pattern: 'kick',
-   fromMe: true,
-   desc: 'Kicks a person from group',
-   type: 'group' 
+  {
+    pattern: 'kick',
+    fromMe: true,
+    desc: 'Kicks a person from group',
+    type: 'group',
   },
   async (message, match, m, client) => {
     if (!message.isGroup) return await message.reply('_This command is for groups only!_');
@@ -33,124 +35,134 @@ bot(
     if (!isBotAdmin) return await message.reply('_I need to be an admin to perform this action!_');
     const jid = parsedJid(match)[0];
     await client.groupParticipantsUpdate(message.jid, [jid], 'remove');
-    return await message.reply(`_@${jid.split('@')[0]} kicked_`, { mentions: [jid] });
+    return await message.reply(`_@${jid.split('@')[0]} kicked_`, {
+      mentions: [jid],
+    });
   }
 );
 
 bot(
- {
-  pattern: 'promote',
-  fromMe: true,
-  desc: 'promote to admin',
-  type: 'group',
- },
- async (message, match, m, client) => {
-  if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
-  match = match || message.reply_message.jid;
-  if (!match) return await message.reply('_Mention user to promote_');
-  if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
-  await client.groupParticipantsUpdate(message.jid, [message.participant], 'promote');
-  return await message.reply(`_@${message.participant[0].split('@')[0]} promoted as admin_`, { mentions: [message.participant] });
- }
+  {
+    pattern: 'promote',
+    fromMe: true,
+    desc: 'promote to admin',
+    type: 'group',
+  },
+  async (message, match, m, client) => {
+    if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
+    match = match || message.reply_message.jid;
+    if (!match) return await message.reply('_Mention user to promote_');
+    if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
+    await client.groupParticipantsUpdate(message.jid, [message.participant], 'promote');
+    return await message.reply(`_@${message.participant[0].split('@')[0]} promoted as admin_`, {
+      mentions: [message.participant],
+    });
+  }
 );
 
 bot(
- {
-  pattern: 'demote',
-  fromMe: true,
-  desc: 'demote from admin',
-  type: 'group',
- },
- async (message, match, m, client) => {
-  if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
-  match = match || message.reply_message.jid;
-  if (!match) return await message.reply('_Mention user to demote_');
-  if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
-  await client.groupParticipantsUpdate(message.jid, [message.participant], 'demote');
-  return await message.reply(`_@${message.participant[0].split('@')[0]} demoted from admin_`, { mentions: [message.participant] });
- }
+  {
+    pattern: 'demote',
+    fromMe: true,
+    desc: 'demote from admin',
+    type: 'group',
+  },
+  async (message, match, m, client) => {
+    if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
+    match = match || message.reply_message.jid;
+    if (!match) return await message.reply('_Mention user to demote_');
+    if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
+    await client.groupParticipantsUpdate(message.jid, [message.participant], 'demote');
+    return await message.reply(`_@${message.participant[0].split('@')[0]} demoted from admin_`, {
+      mentions: [message.participant],
+    });
+  }
 );
 
 bot(
- {
-  pattern: 'mute',
-  fromMe: true,
-  desc: 'mute group',
-  type: 'group',
- },
- async (message, match, m, client) => {
-  if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
-  if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
-  await client.groupSettingUpdate(message.jid, 'announcement');
-  return await message.reply('_Muted.._');
- }
+  {
+    pattern: 'mute',
+    fromMe: true,
+    desc: 'mute group',
+    type: 'group',
+  },
+  async (message, match, m, client) => {
+    if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
+    if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
+    await client.groupSettingUpdate(message.jid, 'announcement');
+    return await message.reply('_Muted.._');
+  }
 );
 
 bot(
- {
-  pattern: 'unmute',
-  fromMe: true,
-  desc: 'unmute group',
-  type: 'group',
- },
- async (message, match, m, client) => {
-  if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
-  if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
-  await client.groupSettingUpdate(message.jid, 'not_announcement');
-  return await message.reply('_Unmuted.._');
- }
+  {
+    pattern: 'unmute',
+    fromMe: true,
+    desc: 'unmute group',
+    type: 'group',
+  },
+  async (message, match, m, client) => {
+    if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
+    if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
+    await client.groupSettingUpdate(message.jid, 'not_announcement');
+    return await message.reply('_Unmuted.._');
+  }
 );
 
 bot(
- {
-  pattern: 'gjid',
-  fromMe: true,
-  desc: 'gets jid of all group members',
-  type: 'group',
- },
- async (message, match, m, client) => {
-  if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
-  let { participants } = await client.groupMetadata(message.jid);
-  let participant = participants.map((u) => u.id);
-  let str = '╭──〔 *Group Jids* 〕\n';
-  participant.forEach((result) => {
-   str += `├ *${result}*\n`;
-  });
-  str += `╰──────────────`;
-  message.reply(str);
- }
+  {
+    pattern: 'gjid',
+    fromMe: true,
+    desc: 'gets jid of all group members',
+    type: 'group',
+  },
+  async (message, match, m, client) => {
+    if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
+    let { participants } = await client.groupMetadata(message.jid);
+    let participant = participants.map((u) => u.id);
+    let str = '╭──〔 *Group Jids* 〕\n';
+    participant.forEach((result) => {
+      str += `├ *${result}*\n`;
+    });
+    str += `╰──────────────`;
+    message.reply(str);
+  }
 );
 
 bot(
- {
-  pattern: 'tagall',
-  fromMe: true,
-  desc: 'mention all users in group',
-  type: 'group',
- },
- async (message, match, m, client) => {
-  if (!message.isGroup) return;
-  const { participants } = await message.client.groupMetadata(message.jid);
-  let teks = '';
-  for (let mem of participants) teks += ` @${mem.id.split('@')[0]}\n`;
-  return await message.sendMessage(message.jid, teks.trim(), { mentions: participants.map((a) => a.id) });
- }
+  {
+    pattern: 'tagall',
+    fromMe: true,
+    desc: 'mention all users in group',
+    type: 'group',
+  },
+  async (message, match, m, client) => {
+    if (!message.isGroup) return;
+    const { participants } = await message.client.groupMetadata(message.jid);
+    let teks = '';
+    for (let mem of participants) teks += ` @${mem.id.split('@')[0]}\n`;
+    return await message.sendMessage(message.jid, teks.trim(), {
+      mentions: participants.map((a) => a.id),
+    });
+  }
 );
 
 bot(
- {
-  pattern: 'tag',
-  fromMe: true,
-  desc: 'mention all users in group',
-  type: 'group',
- },
- async (message, match, m, client) => {
-  if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
-  match = match || message.reply_message.text;
-  if (!match) return message.reply('_Enter or reply to a text to tag_');
-  const { participants } = await client.groupMetadata(message.jid);
-  message.sendMessage(message.jid, match, { mentions: participants.map((a) => a.id) });
- }
+  {
+    pattern: 'tag',
+    fromMe: true,
+    desc: 'mention all users in group',
+    type: 'group',
+  },
+  async (message, match, m, client) => {
+    if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
+    match = match || message.reply_message.text;
+    if (!match) return message.reply('_Enter or reply to a text to tag_');
+    const { participants } = await client.groupMetadata(message.jid);
+    message.sendMessage(message.jid, match, {
+      mentions: participants.map((a) => a.id),
+    });
+  }
 );
 
 bot(
@@ -177,12 +189,16 @@ bot(
   async (message, match, m, client) => {
     if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
     if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
-    
+
     try {
       const participants = await message.client.groupRequestParticipantsList(message.jid);
       if (participants.length === 0) return await message.reply('_No pending join requests_');
-      
-      await message.client.groupRequestParticipantsUpdate(message.jid, participants.map(p => p.jid), 'approve');
+
+      await message.client.groupRequestParticipantsUpdate(
+        message.jid,
+        participants.map((p) => p.jid),
+        'approve'
+      );
       await message.reply(`_Accepted ${participants.length} join request(s)_`);
     } catch (error) {
       console.error(error);
@@ -201,12 +217,16 @@ bot(
   async (message, match, m, client) => {
     if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
     if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
-    
+
     try {
       const participants = await message.client.groupRequestParticipantsList(message.jid);
       if (participants.length === 0) return await message.reply('_No pending join requests_');
-      
-      await message.client.groupRequestParticipantsUpdate(message.jid, participants.map(p => p.jid), 'reject');
+
+      await message.client.groupRequestParticipantsUpdate(
+        message.jid,
+        participants.map((p) => p.jid),
+        'reject'
+      );
       await message.reply(`_Rejected ${participants.length} join request(s)_`);
     } catch (error) {
       console.error(error);
@@ -225,17 +245,19 @@ bot(
   async (message, match, m, client) => {
     if (!message.isGroup) return await message.reply('_ғᴏʀ ɢʀᴏᴜᴘs ᴏɴʟʏ!_');
     if (!isAdmin(message.jid, message.user, message.client)) return await message.reply('_ɪ ɴᴇᴇᴅ ᴛᴏ ʙᴇ ᴀᴅᴍɪɴ!_');
-    
+
     try {
       const participants = await message.client.groupRequestParticipantsList(message.jid);
       if (participants.length === 0) return await message.reply('_No pending join requests_');
-      
+
       let requestList = '📋 *Pending Join Requests:*\n\n';
       participants.forEach((participant, index) => {
         requestList += `${index + 1}. @${participant.jid.split('@')[0]}\n`;
       });
-      
-      await message.reply(requestList, { mentions: participants.map(p => p.jid) });
+
+      await message.reply(requestList, {
+        mentions: participants.map((p) => p.jid),
+      });
     } catch (error) {
       console.error(error);
       await message.reply('_Error occurred while fetching join requests_');
@@ -264,8 +286,8 @@ bot(
     type: 'group',
   },
   async (message, match, m, client) => {
-    const [set1, set2] = match.split(' ').map(set => new Set(set.split(',')));
-    const commonElements = [...set1].filter(x => set2.has(x));
+    const [set1, set2] = match.split(' ').map((set) => new Set(set.split(',')));
+    const commonElements = [...set1].filter((x) => set2.has(x));
     await message.reply(`Common elements: ${commonElements.join(', ')}`);
   }
 );
@@ -278,9 +300,9 @@ bot(
     type: 'group',
   },
   async (message, match, m, client) => {
-    const [set1, set2] = match.split(' ').map(set => new Set(set.split(',')));
-    const diffSet1 = [...set1].filter(x => !set2.has(x));
-    const diffSet2 = [...set2].filter(x => !set1.has(x));
+    const [set1, set2] = match.split(' ').map((set) => new Set(set.split(',')));
+    const diffSet1 = [...set1].filter((x) => !set2.has(x));
+    const diffSet2 = [...set2].filter((x) => !set1.has(x));
     await message.reply(`Elements in set1 but not in set2: ${diffSet1.join(', ')}\nElements in set2 but not in set1: ${diffSet2.join(', ')}`);
   }
 );
@@ -301,8 +323,8 @@ bot(
       poll: {
         name: 'Poll',
         values: options,
-        selectableCount: 1
-      }
+        selectableCount: 1,
+      },
     });
   }
 );
@@ -325,7 +347,9 @@ bot(
 *Member Count:* ${groupMetadata.participants.length}
 *Description:* ${groupMetadata.desc || 'No description'}
     `;
-    await message.reply(info, { mentions: [groupMetadata.owner] });
+    await message.reply(info, {
+      mentions: [groupMetadata.owner],
+    });
   }
 );
 

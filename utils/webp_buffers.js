@@ -1,14 +1,13 @@
 const { Buffer } = require('buffer');
 const { writeFileSync, readFileSync, unlinkSync } = require('fs');
-const path = require('path')
-const sharp = require('sharp')
+const path = require('path');
+const sharp = require('sharp');
 const Crypto = require('crypto');
 const webp = require('node-webpmux');
 const { tmpdir } = require('os');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 ffmpeg.setFfmpegPath(ffmpegPath);
-
 
 async function imageToWebp(media) {
   const tmpFileOut = path.join(tmpdir(), `${Crypto.randomBytes(6).readUIntLE(0, 6).toString(36)}.webp`);
@@ -148,5 +147,5 @@ module.exports = {
   writeExifImg,
   writeExifVid,
   writeExifWebp,
-  convertToWebP
-}
+  convertToWebP,
+};

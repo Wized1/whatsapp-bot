@@ -70,5 +70,5 @@ async function bypassCloudflare(url, config) {
 
 module.exports = {
   getJson,
-  fetchJson: getJson
-}
+  fetchJson: getJson,
+};

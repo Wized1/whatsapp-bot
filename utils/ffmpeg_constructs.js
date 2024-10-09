@@ -63,5 +63,5 @@ function toVideo(buffer, ext) {
 module.exports = {
   toAudio,
   toPTT,
-  toVideo
-}
+  toVideo,
+};
