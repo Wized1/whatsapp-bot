@@ -152,14 +152,14 @@ bot(
  {
   pattern: 'forward ?(.*)',
   fromMe: false,
-  desc: 'Forwards the replied message (any type)',
+  desc: 'Forwards the replied message (any type) with quote',
   type: 'whatsapp',
  },
- async (message, match, m) => {
+ async (message, match, m, client) => {
   if (!m.quoted) return await message.reply('Reply to a message to forward');
   const jids = parsedJid(match);
   for (const jid of jids) {
-   await message.copyNForward(jid, m.quoted);
+   await client.relayMessage(jid, m.quoted.message, { messageId: m.quoted.key.id, quoted: { key: m.quoted.key, message: m.quoted.message, participant: m.quoted.participant } || message.data });
   }
  }
 );
