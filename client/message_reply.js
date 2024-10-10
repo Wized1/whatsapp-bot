@@ -14,6 +14,7 @@ class ReplyMessage extends Base {
 
  _patch(data) {
   const { key, stanzaId, participant, quotedMessage } = data;
+  this.data = data;
   this.key = key;
   this.id = stanzaId;
   this.isBaileys = (this.id && this.id.startsWith('BAE5')) || (this.id && this.id.length === 16);
