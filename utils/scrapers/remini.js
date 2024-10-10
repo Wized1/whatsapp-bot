@@ -13,33 +13,33 @@ const axios = require('axios');
  * @returns {Promise<Buffer>} - A Promise that resolves to the enhanced image buffer.
  */
 async function remini(image, filterType) {
-  const availableFilters = ['enhance', 'recolor', 'dehaze'];
-  filterType = availableFilters.includes(filterType) ? filterType : availableFilters[0];
+ const availableFilters = ['enhance', 'recolor', 'dehaze'];
+ filterType = availableFilters.includes(filterType) ? filterType : availableFilters[0];
 
-  const form = new FormData();
-  const apiUrl = `https://inferenceengine.vyro.ai/${filterType}`;
+ const form = new FormData();
+ const apiUrl = `https://inferenceengine.vyro.ai/${filterType}`;
 
-  form.append('model_version', 1);
+ form.append('model_version', 1);
 
-  const imageBuffer = Buffer.isBuffer(image) ? image : fs.readFileSync(image);
-  form.append('image', imageBuffer, {
-    filename: 'enhance_image_body.jpg',
-    contentType: 'image/jpeg',
+ const imageBuffer = Buffer.isBuffer(image) ? image : fs.readFileSync(image);
+ form.append('image', imageBuffer, {
+  filename: 'enhance_image_body.jpg',
+  contentType: 'image/jpeg',
+ });
+ try {
+  const response = await axios.post(apiUrl, form, {
+   headers: {
+    ...form.getHeaders(),
+    'User-Agent': 'okhttp/4.9.3',
+    Connection: 'Keep-Alive',
+    'Accept-Encoding': 'gzip',
+   },
+   responseType: 'arraybuffer',
   });
-  try {
-    const response = await axios.post(apiUrl, form, {
-      headers: {
-        ...form.getHeaders(),
-        'User-Agent': 'okhttp/4.9.3',
-        Connection: 'Keep-Alive',
-        'Accept-Encoding': 'gzip',
-      },
-      responseType: 'arraybuffer',
-    });
-    return Buffer.from(response.data);
-  } catch (error) {
-    throw new Error('Error enhancing image: ' + error.message);
-  }
+  return Buffer.from(response.data);
+ } catch (error) {
+  throw new Error('Error enhancing image: ' + error.message);
+ }
 }
 
 module.exports = { remini };

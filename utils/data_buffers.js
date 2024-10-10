@@ -16,11 +16,11 @@ const { fromBuffer } = require('file-type');
  */
 
 async function buffToFile(buffer, filename) {
-  if (!filename) filename = Date.now();
-  let { ext } = await fromBuffer(buffer);
-  let filePath = path.join(tmpdir(), `${filename}.${ext}`);
-  await fs.promises.writeFile(filePath, buffer);
-  return filePath;
+ if (!filename) filename = Date.now();
+ let { ext } = await fromBuffer(buffer);
+ let filePath = path.join(tmpdir(), `${filename}.${ext}`);
+ await fs.promises.writeFile(filePath, buffer);
+ return filePath;
 }
 
 /**
@@ -31,21 +31,21 @@ async function buffToFile(buffer, filename) {
  * @throws {Error} - Throws an error if the request fails.
  */
 async function getBuffer(url, options = {}) {
-  try {
-    const res = await axios({
-      method: 'get',
-      url,
-      headers: {
-        DNT: 1,
-        'Upgrade-Insecure-Request': 1,
-      },
-      ...options,
-      responseType: 'arraybuffer',
-    });
-    return res.data;
-  } catch (error) {
-    throw new Error(`Error: ${error.message}`);
-  }
+ try {
+  const res = await axios({
+   method: 'get',
+   url,
+   headers: {
+    DNT: 1,
+    'Upgrade-Insecure-Request': 1,
+   },
+   ...options,
+   responseType: 'arraybuffer',
+  });
+  return res.data;
+ } catch (error) {
+  throw new Error(`Error: ${error.message}`);
+ }
 }
 
 /**
@@ -55,17 +55,17 @@ async function getBuffer(url, options = {}) {
  * @throws {Error} - Throws an error if the file cannot be read.
  */
 async function localBuffer(filePath) {
-  try {
-    const resolvedPath = path.resolve(filePath); // Resolves the path to an absolute path
-    const buffer = await fs.readFile(resolvedPath); // Reads the file into a buffer
-    return buffer;
-  } catch (error) {
-    throw new Error(`Error reading file at ${filePath}: ${error.message}`);
-  }
+ try {
+  const resolvedPath = path.resolve(filePath); // Resolves the path to an absolute path
+  const buffer = await fs.readFile(resolvedPath); // Reads the file into a buffer
+  return buffer;
+ } catch (error) {
+  throw new Error(`Error reading file at ${filePath}: ${error.message}`);
+ }
 }
 
 module.exports = {
-  buffToFile,
-  getBuffer,
-  localBuffer,
+ buffToFile,
+ getBuffer,
+ localBuffer,
 };

@@ -10,20 +10,20 @@ ffmpeg.setFfmpegPath(ffmpegPath);
  * @param {String} ext File Extension
  */
 const toAudio = (inputBuffer) => {
-  return new Promise((resolve, reject) => {
-    const stream = new Readable();
-    stream.push(inputBuffer);
-    stream.push(null);
-    const chunks = [];
-    ffmpeg(stream)
-      .toFormat('mp3')
-      .on('error', (err) => reject(err))
-      .on('end', () => {
-        resolve(Buffer.concat(chunks));
-      })
-      .pipe()
-      .on('data', (chunk) => chunks.push(chunk));
-  });
+ return new Promise((resolve, reject) => {
+  const stream = new Readable();
+  stream.push(inputBuffer);
+  stream.push(null);
+  const chunks = [];
+  ffmpeg(stream)
+   .toFormat('mp3')
+   .on('error', (err) => reject(err))
+   .on('end', () => {
+    resolve(Buffer.concat(chunks));
+   })
+   .pipe()
+   .on('data', (chunk) => chunks.push(chunk));
+ });
 };
 
 /**
@@ -32,24 +32,24 @@ const toAudio = (inputBuffer) => {
  * @returns {Promise<Buffer>} - Promise resolving to the converted Opus buffer.
  */
 const toPTT = (inputBuffer) => {
-  return new Promise((resolve, reject) => {
-    const stream = new Readable();
-    stream.push(inputBuffer);
-    stream.push(null);
-    const chunks = [];
+ return new Promise((resolve, reject) => {
+  const stream = new Readable();
+  stream.push(inputBuffer);
+  stream.push(null);
+  const chunks = [];
 
-    ffmpeg(stream)
-      .audioCodec('libopus')
-      .audioBitrate(128)
-      .audioQuality(10)
-      .toFormat('opus')
-      .on('error', (err) => reject(err))
-      .on('end', () => {
-        resolve(Buffer.concat(chunks));
-      })
-      .pipe()
-      .on('data', (chunk) => chunks.push(chunk));
-  });
+  ffmpeg(stream)
+   .audioCodec('libopus')
+   .audioBitrate(128)
+   .audioQuality(10)
+   .toFormat('opus')
+   .on('error', (err) => reject(err))
+   .on('end', () => {
+    resolve(Buffer.concat(chunks));
+   })
+   .pipe()
+   .on('data', (chunk) => chunks.push(chunk));
+ });
 };
 
 /**
@@ -58,10 +58,10 @@ const toPTT = (inputBuffer) => {
  * @param {String} ext File Extension
  */
 function toVideo(buffer, ext) {
-  return ffmpeg(buffer, ['-c:v', 'libx264', '-c:a', 'aac', '-ab', '128k', '-ar', '44100', '-crf', '32', '-preset', 'slow'], ext, 'mp4');
+ return ffmpeg(buffer, ['-c:v', 'libx264', '-c:a', 'aac', '-ab', '128k', '-ar', '44100', '-crf', '32', '-preset', 'slow'], ext, 'mp4');
 }
 module.exports = {
-  toAudio,
-  toPTT,
-  toVideo,
+ toAudio,
+ toPTT,
+ toVideo,
 };
