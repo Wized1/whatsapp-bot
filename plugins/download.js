@@ -205,3 +205,35 @@ bot(
   return await message.send(buff);
  }
 );
+
+bot(
+ {
+  pattern: 'play ?(.*)',
+  fromMe: false,
+  desc: 'Searchs and downloads from Query',
+  type: 'download'
+ },
+ async (message,match,m,client) => {
+  if(!match) return await message.reply('_Give Me Song Name!_')
+   const res = await getJson(`https://api.guruapi.tech/ytdl/ytsearch?query=${match}`)
+   await message.reply(`_Downloading ${res.results[0].title}_`)
+   const buffer = await getBuffer(res.results[0].url)
+   const waAudio = await toAudio(buffer)
+  return await message.send(waAudio)
+ }
+)
+
+bot(
+ {
+  pattern: 'video ?(.*)',
+  fromMe: false,
+  desc: 'Searchs and downloads from Query',
+  type: 'download'
+ },
+ async (message,match,m,client) => {
+  if(!match) return await message.reply('_Give Me Song Name!_')
+   const res = await getJson(`https://api.guruapi.tech/ytdl/ytsearch?query=${match}`)
+   await message.reply(`_Downloading ${res.results[0].title}_`)
+  return await message.send(res.results[0].url)
+ }
+)
