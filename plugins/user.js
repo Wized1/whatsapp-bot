@@ -1,7 +1,67 @@
 const { bot, parsedJid } = require('../utils');
-const { saveWarn, resetWarn, getFilter, setFilter, deleteFilter } = require('../lib');
-const { PausedChats } = require('../lib/database');
+const { saveWarn, resetWarn, getFilter, setFilter, deleteFilter, getAutoReactSettings, setAutoReactSettings, savePausedChat, PausedChats, AFKManager } = require('../lib');
 const { WARN_COUNT } = require('../config');
+
+const afkManager = new AFKManager();
+
+bot(
+  {
+    on: 'text',
+    fromMe: false,
+    dontAddCommandList: true,
+  },
+  async (message, match) => {
+    const afkData = await AFK.findByPk(message.client.user.id);
+    if (!afkData || !afkData.isAfk) return;
+
+    const isGroup = message.jid.includes('@g.us');
+    const isMentioned = message.mention && message.mention.includes(message.client.user.id.split('@')[0]);
+    const isReply = message.reply_message && message.reply_message.participant === message.client.user.id;
+
+    if (!isGroup || isMentioned || isReply) {
+      const respondToJid = isGroup ? message.participant : message.jid;
+      if (afkManager.shouldRespond(respondToJid)) {
+        console.log(`Sending AFK message to ${respondToJid}`);
+        const afkMessage = await afkManager.getAFKMessage(message.client.user.id);
+        if (afkMessage) {
+          await message.reply(afkMessage);
+        }
+      }
+    }
+  }
+);
+
+bot(
+  {
+    on: 'text',
+    fromMe: true,
+    dontAddCommandList: true,
+  },
+  async (message, match) => {
+    const afkData = await AFK.findByPk(message.client.user.id);
+    if (afkData && afkData.isAfk && !message.id.startsWith('3EB0') && message.fromMe) {
+      await afkManager.clearAFK(message.client.user.id);
+      await message.send("```Afk Off, I'm Online Now```");
+    }
+  }
+);
+
+bot(
+  {
+    pattern: 'afk ?(.*)',
+    fromMe: true,
+    desc: 'Sets your status as away from keyboard (AFK).',
+    type: 'user',
+  },
+  async (message, match) => {
+    const afkData = await AFK.findByPk(message.client.user.id);
+    if (!afkData || !afkData.isAfk) {
+      await afkManager.setAFK(message.client.user.id, match || null);
+      await message.send(`\`\`\`Afk Activated!\`\`\``);
+    }
+  }
+);
+
 bot(
   {
     pattern: 'pause',
@@ -10,7 +70,7 @@ bot(
     type: 'user',
   },
   async (message) => {
-    await PausedChats.savePausedChat(message.key.remoteJid);
+    await savePausedChat(message.key.remoteJid);
     message.reply('_Commands Paused In this Chat_');
   }
 );
@@ -24,7 +84,7 @@ bot(
   },
   async (message) => {
     const id = message.key.remoteJid;
-    const pausedChat = await PausedChats.PausedChats.findOne({
+    const pausedChat = await PausedChats.findOne({
       where: {
         chatId: id,
       },
@@ -146,5 +206,48 @@ bot(
         });
       }
     });
+  }
+);
+
+bot(
+  {
+    pattern: 'autoreact ?(.*)',
+    fromMe: true,
+    desc: 'Set auto-react on/off and choose emojis',
+    type: 'user',
+  },
+  async (message, match, m, client) => {
+    const args = match.trim().split(/\s+/);
+    const command = args[0]?.toLowerCase();
+
+    if (!command) {
+      const settings = await getAutoReactSettings(message.jid);
+      return message.reply(`Auto-react is currently ${settings.isEnabled ? 'ON' : 'OFF'}. Current emojis: ${settings.emojis.join(', ')}`);
+    }
+    if (command === 'on' || command === 'off') {
+      const isEnabled = command === 'on';
+      const emojis = args
+        .slice(1)
+        .join('')
+        .split(/[,\s]+/)
+        .filter((emoji) => emoji.trim());
+      const settings = await setAutoReactSettings(message.jid, isEnabled, emojis.length > 0 ? emojis : null);
+      return message.reply(`Auto-react turned ${isEnabled ? 'ON' : 'OFF'}. Current emojis: ${settings.emojis.join(', ')}`);
+    }
+    return message.reply('Usage: .autoreact on/off [emoji1,emoji2,...]');
+  }
+);
+
+bot(
+  {
+    on: 'text',
+    fromMe: false,
+  },
+  async (message, match, m, client) => {
+    const settings = await getAutoReactSettings(message.jid);
+    if (settings.isEnabled && settings.emojis.length > 0) {
+      const randomEmoji = settings.emojis[Math.floor(Math.random() * settings.emojis.length)];
+      await message.react(randomEmoji);
+    }
   }
 );
