@@ -1,5 +1,12 @@
 const config = require('../config');
 const { bot, getJson, postJson, toAudio, aptoideDl, toPTT, getBuffer, convertToWebP, twitter, pinterest } = require('../utils');
+
+const ytAudio = async (url) => {
+ if(!url) throw new Error("No Url Found!");
+ const resquest = await getJson(`https://api.guruapi.tech/ytdl/ytmp3?url=${encodeURIComponent(url.trim())}`)
+ const audioBuffer = getBuffer(resquest.audio_url)
+ return audioBuffer
+}
 bot(
  {
   pattern: 'spotify ?(.*)',
@@ -217,7 +224,7 @@ bot(
   if(!match) return await message.reply('_Give Me Song Name!_')
    const res = await getJson(`https://api.guruapi.tech/ytdl/ytsearch?query=${match}`)
    await message.reply(`_Downloading ${res.results[0].title}_`)
-   const buffer = await getBuffer(res.results[0].url)
+   const buffer = await ytAudio(res.results[0].url)
    const waAudio = await toAudio(buffer)
   return await message.send(waAudio)
  }
