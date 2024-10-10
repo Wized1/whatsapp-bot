@@ -1,64 +1,6 @@
 const { bot, parsedJid } = require('../utils');
-const { saveWarn, resetWarn, getFilter, setFilter, deleteFilter, getAutoReactSettings, setAutoReactSettings, savePausedChat, PausedChats, setAFK, clearAFK, getAFKMessage, shouldRespond } = require('../lib');
+const { saveWarn, resetWarn, getFilter, setFilter, deleteFilter, getAutoReactSettings, setAutoReactSettings, savePausedChat, PausedChats } = require('../lib');
 const { WARN_COUNT } = require('../config');
-
-bot(
-  {
-    on: 'text',
-    fromMe: false,
-    dontAddCommandList: true,
-  },
-  async (message, match) => {
-    const afkData = await AFK.findByPk(message.client.user.id);
-    if (!afkData || !afkData.isAfk) return;
-
-    const isGroup = message.jid.includes('@g.us');
-    const isMentioned = message.mention && message.mention.includes(message.client.user.id.split('@')[0]);
-    const isReply = message.reply_message && message.reply_message.participant === message.client.user.id;
-
-    if (!isGroup || isMentioned || isReply) {
-      const respondToJid = isGroup ? message.participant : message.jid;
-      if (shouldRespond(respondToJid)) {
-        console.log(`Sending AFK message to ${respondToJid}`);
-        const afkMessage = await getAFKMessage(message.client.user.id);
-        if (afkMessage) {
-          await message.reply(afkMessage);
-        }
-      }
-    }
-  }
-);
-
-bot(
-  {
-    on: 'text',
-    fromMe: true,
-    dontAddCommandList: true,
-  },
-  async (message, match) => {
-    const afkData = await AFK.findByPk(message.client.user.id);
-    if (afkData && afkData.isAfk && !message.id.startsWith('3EB0') && message.fromMe) {
-      await clearAFK(message.client.user.id);
-      await message.send("```Afk Off, I'm Online Now```");
-    }
-  }
-);
-
-bot(
-  {
-    pattern: 'afk ?(.*)',
-    fromMe: true,
-    desc: 'Sets your status as away from keyboard (AFK).',
-    type: 'user',
-  },
-  async (message, match) => {
-    const afkData = await AFK.findByPk(message.client.user.id);
-    if (!afkData || !afkData.isAfk) {
-      await setAFK(message.client.user.id, match || null);
-      await message.send(`\`\`\`Afk Activated!\`\`\``);
-    }
-  }
-);
 
 bot(
   {
