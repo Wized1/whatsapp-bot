@@ -182,6 +182,7 @@ bot(
  {
   on: 'text',
   fromMe: false,
+  dontAddCommandList: true,
  },
  async (message, match, m, client) => {
   const settings = await getAutoReactSettings(message.jid);
