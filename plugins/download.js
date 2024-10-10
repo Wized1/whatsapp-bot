@@ -1,12 +1,7 @@
 const config = require('../config');
 const { bot, getJson, postJson, toAudio, aptoideDl, toPTT, getBuffer, convertToWebP, twitter, pinterest } = require('../utils');
 
-const ytAudio = async (url) => {
- if(!url) throw new Error("No Url Found!");
- const resquest = await getJson(`https://api.guruapi.tech/ytdl/ytmp3?url=${encodeURIComponent(url.trim())}`)
- const audioBuffer = getBuffer(resquest.audio_url)
- return audioBuffer
-}
+
 bot(
  {
   pattern: 'spotify ?(.*)',
@@ -213,22 +208,32 @@ bot(
  }
 );
 
+const ytAudio = async (url) => {
+ if (!url) throw new Error("No Url Found!");
+ const response = await getJson(`https://api.guruapi.tech/ytdl/ytmp3?url=${encodeURIComponent(url.trim())}`);
+ if (!response.audio_url) throw new Error("Audio URL not found in response!");
+ const audioBuffer = await getBuffer(response.audio_url);
+ return audioBuffer;
+};
+
 bot(
  {
-  pattern: 'play ?(.*)',
-  fromMe: false,
-  desc: 'Searchs and downloads from Query',
-  type: 'download'
+   pattern: 'play ?(.*)',
+   fromMe: false,
+   desc: 'Searches and downloads from Query',
+   type: 'download'
  },
- async (message,match,m,client) => {
-  if(!match) return await message.reply('_Give Me Song Name!_')
-   const res = await getJson(`https://api.guruapi.tech/ytdl/ytsearch?query=${match}`)
-   await message.reply(`_Downloading ${res.results[0].title}_`)
-   const buffer = await ytAudio(res.results[0].url)
-   const waAudio = await toAudio(buffer)
-  return await message.send(waAudio)
+ async (message, match, m, client) => {
+   if (!match) return await message.reply('_Give Me Song Name!_');
+   const searchResults = await getJson(`https://api.guruapi.tech/ytdl/ytsearch?query=${encodeURIComponent(match.trim())}`);
+   const selectedResult = searchResults.results[0];
+   await message.reply(`_Downloading ${selectedResult.title}_`);
+     const buffer = await ytAudio(selectedResult.url);
+     const waAudio = await toAudio(buffer); 
+     return await message.send(waAudio);
  }
-)
+);
+
 
 bot(
  {
