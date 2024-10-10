@@ -1,8 +1,6 @@
 const { bot, parsedJid } = require('../utils');
-const { saveWarn, resetWarn, getFilter, setFilter, deleteFilter, getAutoReactSettings, setAutoReactSettings, savePausedChat, PausedChats, AFKManager } = require('../lib');
+const { saveWarn, resetWarn, getFilter, setFilter, deleteFilter, getAutoReactSettings, setAutoReactSettings, savePausedChat, PausedChats, setAFK, clearAFK, getAFKMessage, shouldRespond } = require('../lib');
 const { WARN_COUNT } = require('../config');
-
-const afkManager = new AFKManager();
 
 bot(
   {
@@ -20,9 +18,9 @@ bot(
 
     if (!isGroup || isMentioned || isReply) {
       const respondToJid = isGroup ? message.participant : message.jid;
-      if (afkManager.shouldRespond(respondToJid)) {
+      if (shouldRespond(respondToJid)) {
         console.log(`Sending AFK message to ${respondToJid}`);
-        const afkMessage = await afkManager.getAFKMessage(message.client.user.id);
+        const afkMessage = await getAFKMessage(message.client.user.id);
         if (afkMessage) {
           await message.reply(afkMessage);
         }
@@ -40,7 +38,7 @@ bot(
   async (message, match) => {
     const afkData = await AFK.findByPk(message.client.user.id);
     if (afkData && afkData.isAfk && !message.id.startsWith('3EB0') && message.fromMe) {
-      await afkManager.clearAFK(message.client.user.id);
+      await clearAFK(message.client.user.id);
       await message.send("```Afk Off, I'm Online Now```");
     }
   }
@@ -56,7 +54,7 @@ bot(
   async (message, match) => {
     const afkData = await AFK.findByPk(message.client.user.id);
     if (!afkData || !afkData.isAfk) {
-      await afkManager.setAFK(message.client.user.id, match || null);
+      await setAFK(message.client.user.id, match || null);
       await message.send(`\`\`\`Afk Activated!\`\`\``);
     }
   }
