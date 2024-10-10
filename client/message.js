@@ -60,7 +60,7 @@ class Message extends Base {
    mention: contextInfo?.mentionedJid || false,
    isOwner: key.fromMe || this.sudo,
    messageType: Object.keys(message)[0],
-   isBot: this.id.startsWith('BAE5') || this.id.length === 16 || this.id.length === 15 || false,
+   isBot: this.#checkIfBot(key.id),
   });
 
   if (quoted && !message.buttonsResponseMessage) {
@@ -82,6 +82,10 @@ class Message extends Base {
   if (message.imageMessage) this.image = message.imageMessage;
 
   return super._patch(data);
+ }
+ #checkIfBot(id) {
+  if (!id) return false;
+  return id.startsWith('BAE5') || id.length === 16 || id.length === 15;
  }
 
  async sendMessage(
