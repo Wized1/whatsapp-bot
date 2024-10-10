@@ -21,6 +21,6 @@ async function initialize() {
 
 app.listen(PORT, async () => {
  await makeSession();
- await delay(5000);
+ await delay(3000);
  return await initialize();
 });
