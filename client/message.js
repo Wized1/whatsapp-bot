@@ -94,25 +94,25 @@ class Message extends Base {
   opt = {
    quoted: this.data,
   },
-  type = 'text'
+  type = 'text',
  ) {
   const sendMedia = (
    type,
    content,
    opt = {
     quoted: this.data,
-   }
+   },
   ) => {
    const isBuffer = Buffer.isBuffer(content);
    const isUrl = typeof content === 'string' && content.startsWith('http');
    return this.client.sendMessage(opt.jid || this.jid, {
-    [type]: isBuffer
-     ? content
-     : isUrl
-       ? {
-          url: content,
-         }
-       : content,
+    [type]:
+     isBuffer ? content
+     : isUrl ?
+      {
+       url: content,
+      }
+     : content,
     ...opt,
    });
   };
@@ -139,7 +139,7 @@ class Message extends Base {
      },
      {
       messageId: msg.key.id,
-     }
+     },
     );
    },
    interactive: async () => {
@@ -160,7 +160,7 @@ class Message extends Base {
        },
        ...opt,
       },
-      opt
+      opt,
      );
     }
     return this.client.sendImageAsSticker(this.jid, content, opt);
@@ -220,7 +220,7 @@ class Message extends Base {
     text,
     edit: this.key,
    },
-   opt
+   opt,
   );
  }
 
@@ -237,21 +237,21 @@ class Message extends Base {
   content,
   options = {
    quoted: this.data,
-  }
+  },
  ) {
   const jid = this.jid || options.jid;
   if (!jid) throw new Error('JID is required to send a message.');
 
   const detectType = async (content) => {
    if (typeof content === 'string')
-    return isUrl(content)
-     ? (
-        await fetch(content, {
-         method: 'HEAD',
-        })
-       ).headers
-        .get('content-type')
-        ?.split('/')[0]
+    return isUrl(content) ?
+      (
+       await fetch(content, {
+        method: 'HEAD',
+       })
+      ).headers
+       .get('content-type')
+       ?.split('/')[0]
      : 'text';
    if (Buffer.isBuffer(content)) return (await fileType.fromBuffer(content))?.mime?.split('/')[0] || 'text';
    return 'text';
