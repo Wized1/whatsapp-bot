@@ -1,10 +1,6 @@
 const { bot, isAdmin, parsedJid } = require('../utils');
 const { GreetingsHandler } = require('../client');
 const { getAntiLink, setAntiLink, deleteAntiLink, AntiWord, addAntiWord, getAntiWords } = require('../lib');
-const isAdmin = async (jid, message, client) => {
-  const metadata = await client.groupMetadata(message.jid).catch(() => null);
-  return metadata?.participants.find((p) => p.id === jid)?.admin || false;
-};
 
 bot(
   {
