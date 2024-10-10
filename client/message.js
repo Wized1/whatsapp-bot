@@ -60,7 +60,7 @@ class Message extends Base {
    mention: contextInfo?.mentionedJid || false,
    isOwner: key.fromMe || this.sudo,
    messageType: Object.keys(message)[0],
-   isBot: this.id.startsWith('BAE5') || this.id.length === 16 || this.id.length === 15,
+   isBot: this.id.startsWith('BAE5') || this.id.length === 16 || this.id.length === 15 || false,
   });
 
   if (quoted && !message.buttonsResponseMessage) {
