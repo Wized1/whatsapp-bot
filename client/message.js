@@ -60,7 +60,7 @@ class Message extends Base {
    mention: contextInfo?.mentionedJid || false,
    isOwner: key.fromMe || this.sudo,
    messageType: Object.keys(message)[0],
-   isViewOnce: Boolean(this.reply_message.viewOnceMessage),
+   isViewOnce: Boolean(viewOnceMessage),
    isBot: this.id.startsWith('BAE5') || this.id.length === 16 || this.id.length === 15,
   });
 
