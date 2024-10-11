@@ -1,4 +1,5 @@
-const { bot, qrcode, isUrl, Bitly, removeBg, tinyurl, ssweb, shortenurl, upload, IronMan, convertInputsToPDF, getJson } = require('../utils');
+const { bot } = require('../client');
+const { qrcode, isUrl, Bitly, removeBg, tinyurl, ssweb, shortenurl, upload, IronMan, convertInputsToPDF, getJson } = require('../utils');
 const config = require('../config');
 
 bot(

@@ -47,8 +47,5 @@
   "stream-buffers": "^3.0.2",
   "tough-cookie": "^5.0.0",
   "unzipper": "^0.12.3"
- },
- "devDependencies": {
-  "prettier": "^3.3.3"
  }
 }

@@ -1,4 +1,5 @@
-const { bot, getJson } = require('../utils');
+const { bot } = require('../client');
+const { getJson } = require('../utils');
 const axios = require('axios');
 
 let triviaGames = {};

@@ -1,3 +1,4 @@
+const { commands, bot } = require('./plugins_manager');
 module.exports = {
  Base: require('./base'),
  Message: require('./message'),
@@ -5,4 +6,6 @@ module.exports = {
  SessionManager: require('./session_manager'),
  GroupManager: require('./group_manager'),
  GreetingsHandler: require('./group_greetings'),
+ commands,
+ bot,
 };

@@ -1,5 +1,6 @@
+const { bot } = require('../client');
 const config = require('../config');
-const { bot, toAudio, webp2mp4, convertToWebP } = require('../utils');
+const { toAudio, webp2mp4, convertToWebP } = require('../utils');
 bot(
  {
   pattern: 'sticker',

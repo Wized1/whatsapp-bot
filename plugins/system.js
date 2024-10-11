@@ -1,7 +1,8 @@
+const { bot } = require('../client');
 const axios = require('axios');
 const { TIME_ZONE } = require('../config');
 const { exec } = require('child_process');
-const { bot, tiny, runtime, commands, getOS, getRAMUsage, PluginDB, installPlugin, images } = require('../utils');
+const { tiny, runtime, commands, getOS, getRAMUsage, PluginDB, installPlugin, images } = require('../utils');
 
 bot(
  {

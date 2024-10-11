@@ -1,4 +1,5 @@
-const { bot, isAdmin, parsedJid } = require('../utils');
+const { bot } = require('../client');
+const { isAdmin, parsedJid } = require('../utils');
 const { GreetingsHandler } = require('../client');
 const { getAntiLink, setAntiLink, deleteAntiLink, AntiWord, addAntiWord, getAntiWords } = require('../lib');
 

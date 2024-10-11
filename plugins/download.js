@@ -1,6 +1,6 @@
+const { bot } = require('../client');
 const config = require('../config');
-const { bot, getJson, postJson, toAudio, aptoideDl, toPTT, getBuffer, convertToWebP, twitter, pinterest } = require('../utils');
-
+const { getJson, postJson, toAudio, aptoideDl, toPTT, getBuffer, convertToWebP, twitter, pinterest } = require('../utils');
 
 bot(
  {

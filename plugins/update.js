@@ -1,5 +1,5 @@
 const config = require('../config');
-const { bot } = require('../utils');
+const { bot } = require('../client');
 const { exec } = require('child_process');
 const git = require('simple-git')();
 

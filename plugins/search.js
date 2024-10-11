@@ -1,4 +1,5 @@
-const { bot, getJson, Google, getFloor, onwhatsapp } = require('../utils');
+const { bot } = require('../client');
+const { getJson, Google, getFloor, onwhatsapp } = require('../utils');
 const moment = require('moment');
 const axios = require('axios');
 

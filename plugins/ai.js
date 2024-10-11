@@ -1,4 +1,5 @@
-const { bot, remini, enhanceImage, getJson, getBuffer, localBuffer } = require('../utils');
+const { bot } = require('../client');
+const { remini, enhanceImage, getJson, getBuffer, localBuffer } = require('../utils');
 
 bot(
  {
