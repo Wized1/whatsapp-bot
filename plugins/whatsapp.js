@@ -67,9 +67,7 @@ bot(
     mentions: [jid],
    });
   } else {
-   await client.sendMessage(message.jid, {
-    text: '_Blocked_',
-   });
+   await client.sendMessage(message.jid, { text: '_Blocked_' });
    return await message.block(message.jid);
   }
  }
