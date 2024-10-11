@@ -1,6 +1,6 @@
-const Base = require('./base');
-const config = require('../config');
-const { decodeJid, parsedJid } = require('../utils');
+const Base = require('../_base');
+const config = require('../../config');
+const { decodeJid, parsedJid } = require('../../utils');
 
 class GroupManager extends Base {
  constructor(client, data) {

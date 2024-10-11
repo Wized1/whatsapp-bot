@@ -1,11 +1,11 @@
-const { commands, bot } = require('./plugins_manager');
+const { commands, bot } = require('./plugins');
 module.exports = {
- Base: require('./base'),
- Message: require('./message'),
- ReplyMessage: require('./message_reply'),
- SessionManager: require('./session_manager'),
- GroupManager: require('./group_manager'),
- GreetingsHandler: require('./group_greetings'),
+ Base: require('./_base'),
+ Message: require('./_message'),
+ ReplyMessage: require('./_reply'),
+ SessionManager: require('./session'),
+ GroupManager: require('./groups'),
+ GreetingsHandler: require('./misc/group'),
  commands,
  bot,
 };
