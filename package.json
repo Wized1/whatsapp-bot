@@ -9,8 +9,8 @@
   "stop": "pm2 stop fx-md"
  },
  "dependencies": {
+  "adm-zip": "^0.5.16",
   "@ffmpeg-installer/ffmpeg": "^1.1.0",
-  "archiver": "^7.0.1",
   "axios": "^1.4.0",
   "axios-cookiejar-support": "^5.0.3",
   "baileys": "git+https://github.com/AstroX10/Baileys.git",
@@ -45,7 +45,6 @@
   "simple-git": "^3.24.0",
   "sqlite3": "^5.1.7",
   "stream-buffers": "^3.0.2",
-  "tough-cookie": "^5.0.0",
-  "unzipper": "^0.12.3"
+  "tough-cookie": "^5.0.0"
  }
 }

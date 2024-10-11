@@ -1,79 +1,62 @@
-const { get } = require('axios');
-const { ensureDir, createWriteStream, remove } = require('fs-extra');
-const { join } = require('path');
-const unzipper = require('unzipper');
-const config = require('../config');
+const axios = require('axios');
 const fs = require('fs');
+const path = require('path');
+const AdmZip = require('adm-zip');
 
-/**
- * @class SessionManager
- * @description Manages session operations in the chat application
- */
-class SessionManager {
- constructor() {
-  this.id = config.SESSION_ID.replace(/^Session~/, '').trim();
-  if (!this.id) throw new Error('Session ID is empty');
-  this.zipPath = join(__dirname, `session_${this.id}.zip`);
-  this.dirPath = join(__dirname, '../lib/session');
+const BASE_URL = 'https://session-manager-x9wf.onrender.com';
+
+const getSession = async (accessKey) => {
+ const response = await axios.get(`${BASE_URL}/download/${accessKey}`, {
+  responseType: 'arraybuffer',
+ });
+
+ const zipFileName = `downloaded_${accessKey}.zip`;
+ const zipFilePath = path.join(__dirname, zipFileName);
+ fs.writeFileSync(zipFilePath, response.data);
+
+ const zip = new AdmZip(zipFilePath);
+ const extractedFolder = path.join(__dirname, '../lib/session');
+
+ let sessionCreated = false;
+ if (!fs.existsSync(extractedFolder)) {
+  fs.mkdirSync(extractedFolder);
+  sessionCreated = true;
  }
 
- /**
-  * @returns {Promise<void>}
-  */
- async createSession() {
-  await ensureDir(this.dirPath);
-  await this.downloadSession();
-  await this.extractSession();
-  await this.cleanup();
-  console.log('Session Success');
+ zip.extractAllTo(extractedFolder, true);
+
+ const extractedFiles = zip.getEntries();
+ if (extractedFiles.length === 0) {
+  console.log('Session created');
+  return;
  }
 
- /**
-  * @returns {Promise<void>}
-  */
- async downloadSession() {
-  const response = await get(`https://session-manager-x9wf.onrender.com/download/${this.id}`, { responseType: 'stream' });
-  return new Promise((resolve, reject) => {
-   response.data.pipe(createWriteStream(this.zipPath)).on('finish', resolve).on('error', reject);
-  });
+ let anyFileReplaced = false; // To track if any file was replaced
+ for (const entry of extractedFiles) {
+  const existingFilePath = path.join(extractedFolder, entry.entryName);
+  const extractedContent = entry.getData().toString('utf8');
+
+  if (fs.existsSync(existingFilePath)) {
+   const existingContent = fs.readFileSync(existingFilePath, 'utf8');
+
+   if (existingContent !== extractedContent) {
+    anyFileReplaced = true; // Mark that a file has been replaced
+    fs.writeFileSync(existingFilePath, extractedContent); // Replace the file
+   }
+  } else {
+   anyFileReplaced = true; // Mark that a new file is being added
+   fs.writeFileSync(existingFilePath, extractedContent);
+  }
  }
 
- /**
-  * @returns {Promise<void>}
-  */
- async extractSession() {
-  return new Promise((resolve, reject) => {
-   fs
-    .createReadStream(this.zipPath)
-    .pipe(unzipper.Parse())
-    .on('entry', (entry) => {
-     const outputPath = join(this.dirPath, entry.path);
-     this.shouldExtractFile(entry.path)
-      ? entry.pipe(createWriteStream(outputPath)).on('error', (error) => {
-         console.error(`Failed to extract ${entry.path}:`, error);
-         reject(error);
-        })
-      : entry.autodrain();
-    })
-    .on('close', resolve)
-    .on('error', reject);
-  });
+ if (sessionCreated) {
+  console.log('Session created');
+ } else if (anyFileReplaced) {
+  console.log('Session replaced');
+ } else {
+  console.log('Session skipped');
  }
 
- /**
-  * @param {string} fileName - The name of the file to check
-  * @returns {boolean} Whether the file should be extracted
-  */
- shouldExtractFile(fileName) {
-  return fileName === 'creds.json' || (fileName.startsWith('app-state') && fileName.endsWith('.json'));
- }
-
- /**
-  * @returns {Promise<void>}
-  */
- async cleanup() {
-  await remove(this.zipPath);
- }
-}
-
-module.exports = SessionManager;
+ fs.unlinkSync(zipFilePath);
+};
+module.exports = getSession;

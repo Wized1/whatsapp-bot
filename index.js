@@ -4,12 +4,11 @@ const config = require('./config');
 const { delay } = require('baileys');
 const { connect, getandRequirePlugins } = require('./lib');
 const { requireJS } = require('./utils');
-const { SessionManager } = require('./client');
+const { getSession } = require('./client');
 const app = express();
 const PORT = process.env.PORT || '8000';
-async function makeSession() {
- const session = new SessionManager();
- await session.createSession();
+async function makeSession(id) {
+ return await getSession(id);
 }
 async function initialize() {
  await requireJS(path.join(__dirname, '/lib/database/'));
@@ -20,7 +19,7 @@ async function initialize() {
 }
 
 app.listen(PORT, async () => {
- await makeSession();
+ await makeSession(config.SESSION_ID);
  await delay(3000);
  return await initialize();
 });
