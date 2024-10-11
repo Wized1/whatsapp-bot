@@ -1,4 +1,4 @@
-const { bot } = require('../utils');
+const { bot } = require('../client');
 bot(
  {
   on: 'text',
