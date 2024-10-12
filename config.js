@@ -26,16 +26,16 @@ if (isSQLite) {
 }
 
 module.exports = {
- SESSION_ID: process.env.SESSION_ID || '',
- PREFIX: process.env.HANDLER || '[.,/]',
+ SESSION_ID: process.env.SESSION_ID || 'SESSION_91_58_61',
+ PREFIX: process.env.HANDLER || '[.,/]'.,
  LOGS: toBool(process.env.LOGS) ?? true,
  WARN_COUNT: 3,
- SUDO: process.env.SUDO || '',
+ SUDO: process.env.SUDO || '923023229453',
  MODE: process.env.MODE || 'private',
  AUTO_READ: toBool(process.env.AUTO_READ) || false,
- AUTO_STATUS_READ: toBool(process.env.AUTO_STATUS_READ) || false,
- DELETED_LOG: toBool(process.env.DELETED_LOG) || false,
- ANTI_DELETE: toBool(process.env.ANTI_DELETE) || false,
+ AUTO_STATUS_READ: toBool(process.env.AUTO_STATUS_READ) || true,
+ DELETED_LOG: toBool(process.env.DELETED_LOG) || true,
+ ANTI_DELETE: toBool(process.env.ANTI_DELETE) || true,
  DATABASE_URL,
  DATABASE: sequelize,
 };
