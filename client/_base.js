@@ -2,7 +2,6 @@
 class Base {
  constructor(client, msg) {
   Object.defineProperty(this, 'client', { value: client });
-  Object.defineProperties(this, 'bot', { value: this.client });
   Object.defineProperty(this, 'm', { value: msg });
  }
 
