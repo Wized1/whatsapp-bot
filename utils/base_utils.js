@@ -166,7 +166,10 @@ const requireJS = async (dir, { recursive = false, fileFilter = (f) => path.extn
 
  return loadedModules.filter(Boolean);
 };
-
+const isAdmin = async (jid, message, client) => {
+ const metadata = await client.groupMetadata(message.jid).catch(() => null);
+ return metadata?.participants.find((p) => p.id === jid)?.admin || false;
+};
 module.exports = {
  requireJS,
  getFloor,
@@ -181,12 +184,7 @@ module.exports = {
  removeCommand,
  extractUrlFromMessage,
  decodeJid,
- isAdmin: async (jid, user, client) => {
-  const groupMetadata = await client.groupMetadata(jid);
-  const groupAdmins = groupMetadata.participants.filter((participant) => participant.admin !== null).map((participant) => participant.id);
-
-  return groupAdmins.includes(decodeJid(user));
- },
+ isAdmin,
  webp2mp4: async (source) => {
   let form = new FormData();
   let isUrl = typeof source === 'string' && /https?:\/\//.test(source);
