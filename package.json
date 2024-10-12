@@ -5,7 +5,7 @@
  "main": "index.js",
  "author": "MUDASIR",
  "scripts": {
-  "start": ".menu",
+  "start": ".start",
   "stop": ".stop"
  },
  "dependencies": {
