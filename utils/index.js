@@ -120,9 +120,10 @@ const requireJS = async (dir, { recursive = false, fileFilter = (f) => path.extn
  return loadedModules.filter(Boolean);
 };
 
-const parsedJid = (text) => [...text.matchAll(/([0-9]{5,16}|0)/g)].map((v) => v[1] + '@s.whatsapp.net');
-const parseJid = (text = '') => [...text.matchAll(/@([0-9]{5,16}|0)/g)].map((v) => v[1] + '@s.whatsapp.net');
-
+const parsedJid = (text) => {
+ if (typeof text !== 'string') throw new Error('Input must be a string');
+ return [...text.matchAll(/([0-9]{5,16}|0)/g)].map((v) => v[1] + '@s.whatsapp.net');
+};
 const getTempFile = (ext = '') => path.join(tmpdir(), `${Crypto.randomBytes(6).toString('hex')}${ext}`);
 const createExif = (metadata) => {
  const json = { 'sticker-pack-id': `https://github.com/AstroX10/whatsapp-bot`, 'sticker-pack-name': metadata.packname, 'sticker-pack-publisher': metadata.author, emojis: metadata.categories || [''] };
@@ -178,7 +179,6 @@ module.exports = {
  removeCommand,
  getJson,
  parsedJid,
- parseJid,
  imageToWebp,
  videoToWebp,
  writeExifImg,

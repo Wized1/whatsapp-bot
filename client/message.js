@@ -13,7 +13,8 @@ class Message extends Base {
  }
 
  _patch(data) {
-  data, (this.user = decodeJid(this.client.user.id));
+  data;
+  this.user = decodeJid(this.client.user.id);
   this.key = data.key;
   this.isGroup = data.isGroup;
   this.prefix = data.prefix;
