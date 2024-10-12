@@ -1,3 +1,4 @@
+const { default: client } = require('baileys');
 const config = require('../../config');
 const { serialize } = require('../../lib/serialize');
 const { getPausedChats, saveMessage } = require('../database');
