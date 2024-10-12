@@ -1,7 +1,8 @@
 const config = require('../../config');
-const { serialize } = require('../../lib');
+const { serialize } = require('../../lib/serialize');
 const { getPausedChats, saveMessage } = require('../database');
-const { Message, commands } = require('../index');
+const { commands } = require('../plugins');
+const Message = require('../_message');
 
 const handleMessages = async ({ messages }) => {
  const msg = await serialize(JSON.parse(JSON.stringify(messages[0])), client);

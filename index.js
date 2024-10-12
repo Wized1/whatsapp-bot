@@ -11,7 +11,7 @@ async function makeSession(id) {
  return await getSession(id);
 }
 async function initialize() {
- await requireJS(path.join(__dirname, '/lib/database/'));
+ await requireJS(path.join(__dirname, '/client/database/'));
  await config.DATABASE.sync();
  await requireJS(path.join(__dirname, '/plugins/'));
  await getandRequirePlugins();
