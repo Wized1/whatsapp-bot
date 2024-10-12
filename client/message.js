@@ -12,34 +12,34 @@ class Message extends Base {
 
  _patch(data) {
   const { key, isGroup, message, pushName, messageTimestamp, quoted } = data;
-  const contextInfo = message?.extendedTextMessage?.contextInfo;
-  const senderID = contextInfo?.participant || key.remoteJid;
+    const contextInfo = message?.extendedTextMessage?.contextInfo;
+    const senderID = contextInfo?.participant || key.remoteJid;
 
-  Object.assign(this, {
-   data,
-   user: decodeJid(this.client.user.id),
-   key,
-   isGroup,
-   prefix: config.PREFIX.replace(/[\[\]]/g, ''),
-   id: key.id,
-   jid: key.remoteJid,
-   chat: key.remoteJid,
-   senderID,
-   message: {
-    key,
-    message,
-   },
-   pushName,
-   sender: pushName,
-   participant: parsedJid(data.sender)[0],
-   sudo: config.SUDO.split(',').includes(this.participant?.split('@')[0]) || false,
-   text: data.body,
-   fromMe: key.fromMe,
-   timestamp: messageTimestamp.low || messageTimestamp,
-   mention: contextInfo?.mentionedJid || false,
-   isOwner: key.fromMe || this.sudo,
-   messageType: Object.keys(message)[0],
-   isBot: this.#checkIfBot(key.id),
+    Object.assign(this, {
+      data,
+      user: decodeJid(this.client.user.id),
+      key,
+      isGroup,
+      prefix: config.PREFIX.replace(/[\[\]]/g, ''),
+      id: key.id,
+      jid: key.remoteJid,
+      chat: key.remoteJid,
+      senderID,
+      message: {
+        key,
+        message,
+      },
+      pushName,
+      sender: pushName,
+      participant: data.sender ? parsedJid(data.sender.toString())[0] : undefined,
+      sudo: config.SUDO.split(',').includes(this.participant?.split('@')[0]) || false,
+      text: data.body,
+      fromMe: key.fromMe,
+      timestamp: messageTimestamp.low || messageTimestamp,
+      mention: contextInfo?.mentionedJid || false,
+      isOwner: key.fromMe || this.sudo,
+      messageType: Object.keys(message)[0],
+      isBot: this.#checkIfBot(key.id),
   });
 
   if (quoted && !message.buttonsResponseMessage) {
