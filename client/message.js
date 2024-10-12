@@ -20,7 +20,7 @@ class Message extends Base {
    user: decodeJid(this.client.user.id),
    key,
    isGroup,
-   prefix: config.HANDLERS.replace(/[\[\]]/g, ''),
+   prefix: config.PREFIX.replace(/[\[\]]/g, ''),
    id: key.id,
    jid: key.remoteJid,
    chat: key.remoteJid,
