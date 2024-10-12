@@ -2,9 +2,9 @@ const express = require('express');
 const path = require('path');
 const config = require('./config');
 const { delay } = require('baileys');
-const { connect, getandRequirePlugins } = require('./lib');
+const { connect } = require('./lib');
 const { requireJS } = require('./utils');
-const { getSession } = require('./client');
+const { getSession, getandRequirePlugins } = require('./client');
 const app = express();
 const PORT = process.env.PORT || '8000';
 async function makeSession(id) {
