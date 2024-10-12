@@ -1,12 +1,12 @@
 {
- "name": "fx",
+ "name": "BHAYO-MD",
  "version": "1.0.9",
- "description": "Whatsapp Bot",
+ "description": "Whatsapp Bot CREATED BY MUDASIR WAZIR",
  "main": "index.js",
- "author": "AstroX10",
+ "author": "MUDASIR",
  "scripts": {
-  "start": "pm2 start . --attach --name fx",
-  "stop": "pm2 stop fx"
+  "start": ".menu",
+  "stop": ".stop"
  },
  "dependencies": {
   "@ffmpeg-installer/ffmpeg": "^1.1.0",
