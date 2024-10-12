@@ -1,4 +1,6 @@
 const { commands, bot } = require('./plugins');
+const { getAntiLink, setAntiLink, deleteAntiLink, addAntiWord, removeAntiWord, getAntiWords, getAutoReactSettings, setAutoReactSettings, getFilter, setFilter, deleteFilter, getPausedChats, savePausedChat, deleteAllPausedChats, installPlugin, getandRequirePlugins, removePlugin, saveMessage, loadMessage, saveChat, getName, getWarns, saveWarn, resetWarn, setMessage, getMessage, delMessage, toggleStatus, getStatus } = require('./database');
+const { handleMessages } = require('./misc/msgs');
 module.exports = {
  Base: require('./_base'),
  Message: require('./_message'),
@@ -8,4 +10,34 @@ module.exports = {
  GreetingsHandler: require('./misc/group'),
  commands,
  bot,
+ getAntiLink,
+ setAntiLink,
+ deleteAntiLink,
+ addAntiWord,
+ removeAntiWord,
+ getAntiWords,
+ getAutoReactSettings,
+ setAutoReactSettings,
+ getFilter,
+ setFilter,
+ deleteFilter,
+ getPausedChats,
+ savePausedChat,
+ deleteAllPausedChats,
+ installPlugin,
+ getandRequirePlugins,
+ removePlugin,
+ saveMessage,
+ loadMessage,
+ saveChat,
+ getName,
+ getWarns,
+ saveWarn,
+ resetWarn,
+ setMessage,
+ getMessage,
+ delMessage,
+ toggleStatus,
+ getStatus,
+ handleMessages
 };
